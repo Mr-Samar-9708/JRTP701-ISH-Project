@@ -12,7 +12,7 @@
 	<artifactId>17-JRTP701-SSA-Web-API</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>JRTP701-SSA-Web-API</name>
+	<name>17-JRTP701-SSA-Web-API</name>
 	<description>Wish message project</description>
 	<url/>
 	<licenses>
