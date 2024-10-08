@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: 17-JRTP701-DataCollection-Service
+  datasource:
+          driver-class-name: oracle.jdbc.driver.OracleDriver
+          url:
+          username: System
+          password: java8581
+  jpa:
+    hibernate:
+         ddl-auto: update
+    database-platform: org.hibernate.dialect.OracleDialect
+    show-sql: true
