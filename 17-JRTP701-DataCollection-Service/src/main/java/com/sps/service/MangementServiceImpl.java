@@ -26,7 +26,7 @@ import com.sps.repository.IDcIncomeRepository;
 import com.sps.repository.IDcPlanRepository;
 
 @Service
-public class MangementService implements IDcMgmtService {
+public class MangementServiceImpl implements IDcMgmtService {
 
 	@Autowired
 	private ICitizenAppRegistrationRepository appRegsRepo;
