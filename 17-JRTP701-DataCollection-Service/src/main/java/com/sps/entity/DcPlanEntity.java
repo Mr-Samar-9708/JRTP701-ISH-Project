@@ -27,7 +27,7 @@ public class DcPlanEntity {
 	private String planName;
 	private LocalDate startDate;
 	private LocalDate endData;
-	@Column(length = 35)
+	@Column(length = 200)
 	private String description;
 	@Column(length = 12)
 	private String activeSw;

@@ -3,7 +3,7 @@ package com.sps.binding;
 import lombok.Data;
 
 @Data
-public class PlanSelectionInputs {
+public class SelectPlanInput {
 
 	private Integer caseNo;
 	private Integer appId;
