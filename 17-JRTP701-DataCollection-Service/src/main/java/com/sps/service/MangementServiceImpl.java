@@ -62,7 +62,8 @@ public class MangementServiceImpl implements IDcMgmtService {
 	@Override
 	public List<String> showAllPlanName() {
 		List<DcPlanEntity> allPlan = planRepo.findAll();
-		return allPlan.stream().map(plan -> plan.getPlanName()).toList();
+		// Here we are using method reference
+		return allPlan.stream().map(DcPlanEntity::getPlanName).toList();
 	}
 
 	@Override
