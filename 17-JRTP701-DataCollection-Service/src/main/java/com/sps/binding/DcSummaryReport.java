@@ -12,7 +12,7 @@ public class DcSummaryReport {
 
 	private CitizenAppRegistrationInput citizenRegistration;
 	private DcCaseEntity caseDetails;
-	private DcPlanEntity planEntity;
+	private String planName;
 	private EducationInputs educationInputs;
 	private List<ChildInputs> childDetails;
 	private IncomeInputs incomeDetails;
