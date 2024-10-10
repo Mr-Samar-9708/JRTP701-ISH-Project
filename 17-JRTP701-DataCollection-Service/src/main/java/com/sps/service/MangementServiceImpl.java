@@ -170,7 +170,7 @@ public class MangementServiceImpl implements IDcMgmtService {
 
 		Optional<CitizenAppRegistrationEntity> citizenEntity = appRegsRepo.findById(caseDetails.getAppId());
 		if (citizenEntity.isPresent()) {
-			BeanUtils.copyProperties(citizenEntity, citizenInput);
+			BeanUtils.copyProperties(citizenEntity.get(), citizenInput);
 		}
 
 		BeanUtils.copyProperties(educationEntity, educationInputs);

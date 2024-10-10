@@ -33,7 +33,7 @@ public class CitizenAppRegistrationEntity {
 	@Column(length = 30)
 	private String email;
 	private Long phoneNo;
-	private Long ssn;
+	private Integer ssn;
 	@Column(length = 32)
 	private String stateName;
 	private LocalDate dob;

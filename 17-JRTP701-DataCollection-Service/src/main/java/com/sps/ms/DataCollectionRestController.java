@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sps.binding.DcSummaryReport;
 import com.sps.binding.EducationInputs;
 import com.sps.binding.IncomeInputs;
+import com.sps.binding.PlanInput;
 import com.sps.binding.PlanOutput;
 import com.sps.binding.SelectPlanInput;
 import com.sps.service.IDcMgmtService;
@@ -46,15 +48,15 @@ public class DataCollectionRestController {
 		return new ResponseEntity<>(selectedCaseNo, HttpStatus.OK);
 	}
 
-	/*@PostMapping("/savePlan")
-	private ResponseEntity<String> savePlan(@RequestBody List<PlanInput> input) {
+	@PostMapping("/savePlan")
+	public ResponseEntity<String> savePlan(@RequestBody List<PlanInput> input) {
 	    try {
 	        String msg = service.savePlan(input);
 	        return new ResponseEntity<>(msg, HttpStatus.OK);
 	    } catch (Exception e) {
 	        return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
-	}*/
+	}
 
 	@PostMapping("/saveIncome")
 	public ResponseEntity<Integer> saveIncome(@RequestBody IncomeInputs incomeData) {
@@ -66,6 +68,12 @@ public class DataCollectionRestController {
 	public ResponseEntity<Integer> saveEducation(@RequestBody EducationInputs educationData) {
 		int caseNo = service.saveEducationDetails(educationData);
 		return new ResponseEntity<>(caseNo, HttpStatus.OK);
+	}
+	
+	@GetMapping("/getSummary/{caseNo}")
+	public ResponseEntity<DcSummaryReport> showDCSummary(@PathVariable Integer caseNo){
+		DcSummaryReport summary=	service.showDCSummary(caseNo);
+		return new ResponseEntity<>(summary,HttpStatus.OK);
 	}
 
 }
