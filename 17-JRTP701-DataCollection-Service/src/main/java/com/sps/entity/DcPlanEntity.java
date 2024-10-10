@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +27,9 @@ public class DcPlanEntity {
 	private Integer caseNo;
 	@Column(length = 32)
 	private String planName;
+	 //@JsonFormat(pattern = "MM/dd/yyyy")
 	private LocalDate startDate;
+	 //@JsonFormat(pattern = "MM/dd/yyyy")
 	private LocalDate endData;
 	@Column(length = 200)
 	private String description;
