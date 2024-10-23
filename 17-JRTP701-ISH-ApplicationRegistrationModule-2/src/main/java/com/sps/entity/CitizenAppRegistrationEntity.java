@@ -30,6 +30,7 @@ public class CitizenAppRegistrationEntity {
 	private Integer appId;
 	@Column(length = 31)
 	private String fullName;
+	private Integer age;
 	@Column(length = 30)
 	private String email;
 	private Long phoneNo;

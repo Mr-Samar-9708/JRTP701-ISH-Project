@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class AppRegistrationInput {
 
 	private String fullName;
+	private Integer age;
 	private String email;
 	private Long phoneNo;
 	private Integer ssn;
