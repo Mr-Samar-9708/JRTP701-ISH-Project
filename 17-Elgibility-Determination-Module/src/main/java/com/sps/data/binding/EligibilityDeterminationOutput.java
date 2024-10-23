@@ -13,5 +13,6 @@ public class EligibilityDeterminationOutput {
 	private String planStatus;
 	private LocalDate planStartDate;
 	private LocalDate planEndDate;
+	private Double benifitAmt;
 	private String denialReason;
 }

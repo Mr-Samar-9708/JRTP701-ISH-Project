@@ -26,6 +26,7 @@ public class EligibilityDeterminationEntity {
 	private String planStatus;
 	private LocalDate planStartDate;
 	private LocalDate planEndDate;
+	private Double benifitAmt;
 	private String denialReason;
 
 }
