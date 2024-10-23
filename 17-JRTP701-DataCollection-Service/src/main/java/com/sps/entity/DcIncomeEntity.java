@@ -14,7 +14,7 @@ import lombok.Data;
 public class DcIncomeEntity {
 
 	@Id
-	@SequenceGenerator(name = "seq_gen1", sequenceName = "gen_incomeId", initialValue = 100, allocationSize = 1)
+	@SequenceGenerator(name = "seq_gen1", sequenceName = "gen_incomeId", initialValue = 969, allocationSize = 1)
 	@GeneratedValue(generator = "seq_gen1", strategy = GenerationType.SEQUENCE)
 	private Integer incomeId;
 	private Integer caseNo;
