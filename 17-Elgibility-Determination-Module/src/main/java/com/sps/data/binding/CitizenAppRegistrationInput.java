@@ -10,7 +10,6 @@ public class CitizenAppRegistrationInput {
 	private Integer appId;
 	private String fullName;
 	private String email;
-	private Integer age;
 	private Long phoneNo;
 	private Integer ssn;
 	private String stateName;

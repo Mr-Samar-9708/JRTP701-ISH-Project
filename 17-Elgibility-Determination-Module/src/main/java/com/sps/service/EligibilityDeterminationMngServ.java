@@ -5,6 +5,7 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.sps.data.binding.EligibilityDeterminationOutput;
@@ -13,6 +14,7 @@ import com.sps.entity.DcCaseEntity;
 import com.sps.entity.DcChildrenEntity;
 import com.sps.entity.DcEducationEntity;
 import com.sps.entity.DcIncomeEntity;
+import com.sps.entity.DcPlanEntity;
 import com.sps.entity.EligibilityDeterminationEntity;
 import com.sps.repository.EligibilityDeterminationRepo;
 import com.sps.repository.ICitizenAppRegistrationRepository;
@@ -54,11 +56,45 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 	public EligibilityDeterminationOutput determineEligibility(Integer caseNo) {
 		// For save eligible person data
 		EligibilityDeterminationEntity entity = new EligibilityDeterminationEntity();
+		
+		int appId = 0;
+		int planId = 0;
+		String planName = null;
+		int citizenAge = 0;
 
-		// For return final Result
-		EligibilityDeterminationOutput output = new EligibilityDeterminationOutput();
+		Optional<DcCaseEntity> optCase = caseRepo.findById(caseNo);
+		if (optCase.isPresent()) {
+			DcCaseEntity caseObj = optCase.get();
+			appId = caseObj.getAppId();
+			planId = caseObj.getPlainId();
+		}
 
-		return null;
+		Optional<DcPlanEntity> optPlan = planRepo.findById(planId);
+		if (optPlan.isPresent()) {
+			DcPlanEntity planObj = optPlan.get();
+			planName = planObj.getPlanName();
+		}
+
+		Optional<CitizenAppRegistrationEntity> optCitizen = citizenRepo.findById(appId);
+		if (optCitizen.isPresent()) {
+			CitizenAppRegistrationEntity citizenObj = optCitizen.get();
+			LocalDate dob = citizenObj.getDob();
+			LocalDate currentDate = LocalDate.now();
+			citizenAge = Period.between(dob, currentDate).getYears();
+		}
+
+		EligibilityDeterminationOutput output = null;
+		try {
+			// For return final Result
+			output = applyPlanCondition(caseNo, planName, citizenAge);
+			BeanUtils.copyProperties(output, entity);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		eligibilityRepo.save(entity);
+
+		return output;
 	}
 
 	// Helper Method

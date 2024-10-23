@@ -32,7 +32,7 @@ public class ApplicationRegistrationTest {
 
 	@Test
 	public void saveCitizenIsTrue() throws Exception {
-		AppRegistrationInput appRegist = new AppRegistrationInput("Samar Pratap Singh",19, "samarpratap9708@gmail.com",
+		AppRegistrationInput appRegist = new AppRegistrationInput("Samar Pratap Singh","samarpratap9708@gmail.com",
 				8581003656l, 25656502, LocalDate.of(2024, 9, 17));
 		Mockito.when(service.citizenRegistration(appRegist)).thenReturn(1);
 
