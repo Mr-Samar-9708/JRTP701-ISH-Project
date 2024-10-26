@@ -16,8 +16,12 @@ public class EligibilityDeterminationController {
 
 	private IEligibilityDeterminationMngService service;
 
+	public EligibilityDeterminationController(IEligibilityDeterminationMngService service) {
+		this.service = service;
+	}
+
 	@GetMapping("/checkByCaseNo/{caseNo}")
-	public ResponseEntity<EligibilityDeterminationOutput> checkEligibilityByCaseNo(@PathVariable int caseNo) {
+	public ResponseEntity<EligibilityDeterminationOutput> checkEligibilityByCaseNo(@PathVariable Integer caseNo) {
 		EligibilityDeterminationOutput output = service.determineEligibility(caseNo);
 		return new ResponseEntity<>(output, HttpStatus.OK);
 	}

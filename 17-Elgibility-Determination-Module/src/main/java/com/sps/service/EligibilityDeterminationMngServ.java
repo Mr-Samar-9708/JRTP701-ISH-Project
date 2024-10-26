@@ -3,7 +3,6 @@ package com.sps.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,8 @@ import com.sps.repository.IDcEducationRepository;
 import com.sps.repository.IDcIncomeRepository;
 import com.sps.repository.IDcPlanRepository;
 
+import jakarta.annotation.Nonnull;
+
 @Service
 public class EligibilityDeterminationMngServ implements IEligibilityDeterminationMngService {
 
@@ -35,6 +36,17 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 	private IDcIncomeRepository incomeRepo;
 	private IDcPlanRepository planRepo;
 
+	// Plan Constant
+	private static final String PLAN_SNAP = "SNAP";
+	private static final String PLAN_CCAP = "CCAP";
+	private static final String PLAN_MEDAID = "MEDAID";
+	private static final String PLAN_MEDCARE = "MEDCARE";
+	private static final String PLAN_CAJW = "CAJW";
+	private static final String PLAN_QHP = "QHP";
+	private static final String PLAN_APPROVED = "Approved";
+	private static final String PLAN_DENIED = "Denied";
+
+	// Constructor Injection for initializing 
 	public EligibilityDeterminationMngServ(EligibilityDeterminationRepo eligibilityRepo,
 			ICitizenAppRegistrationRepository citizenRepo, IDcCaseRepository caseRepo,
 			IDcChildrenRepository childrenRepo, IDcEducationRepository educationRepo, IDcIncomeRepository incomeRepo,
@@ -49,49 +61,27 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 		this.planRepo = planRepo;
 	}
 
-	private static final String APPROVED = "Approved";
-	private static final String DENIED = "Denied";
-
 	@Override
-	public EligibilityDeterminationOutput determineEligibility(Integer caseNo) {
-		// For save eligible person data
-		EligibilityDeterminationEntity entity = new EligibilityDeterminationEntity();
-		
-		int appId = 0;
-		int planId = 0;
-		String planName = null;
-		int citizenAge = 0;
-
-		Optional<DcCaseEntity> optCase = caseRepo.findById(caseNo);
-		if (optCase.isPresent()) {
-			DcCaseEntity caseObj = optCase.get();
-			appId = caseObj.getAppId();
-			planId = caseObj.getPlainId();
-		}
-
-		Optional<DcPlanEntity> optPlan = planRepo.findById(planId);
-		if (optPlan.isPresent()) {
-			DcPlanEntity planObj = optPlan.get();
-			planName = planObj.getPlanName();
-		}
-
-		Optional<CitizenAppRegistrationEntity> optCitizen = citizenRepo.findById(appId);
-		if (optCitizen.isPresent()) {
-			CitizenAppRegistrationEntity citizenObj = optCitizen.get();
-			LocalDate dob = citizenObj.getDob();
-			LocalDate currentDate = LocalDate.now();
-			citizenAge = Period.between(dob, currentDate).getYears();
-		}
-
+	public EligibilityDeterminationOutput determineEligibility(@Nonnull Integer caseNo) {
 		EligibilityDeterminationOutput output = null;
-		try {
-			// For return final Result
-			output = applyPlanCondition(caseNo, planName, citizenAge);
-			BeanUtils.copyProperties(output, entity);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		EligibilityDeterminationEntity entity = new EligibilityDeterminationEntity();
 
+		DcCaseEntity caseEntity = caseRepo.findById(caseNo).orElseThrow(() -> new RuntimeException("Case not found"));
+
+		DcPlanEntity planEntity = planRepo.findById(caseEntity.getPlainId()).orElseThrow(() -> new RuntimeException("Plan not found"));
+
+		CitizenAppRegistrationEntity citizenEntity = citizenRepo.findById(caseEntity.getAppId()).orElseThrow(() -> new RuntimeException("Citizen not found"));
+
+		String planName = planEntity.getPlanName();
+		LocalDate currentDate = LocalDate.now();
+		int citizenAge = Period.between(citizenEntity.getDob(), currentDate).getYears();
+
+		output = applyPlanCondition(caseNo, planName, citizenAge);
+		output.setCaseNo(caseNo);
+		output.setHolderName(citizenEntity.getFullName());
+		output.setHolderSSN(citizenEntity.getSsn());
+
+		BeanUtils.copyProperties(output, entity);
 		eligibilityRepo.save(entity);
 
 		return output;
@@ -105,16 +95,16 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 		double empIncome = income.getEmpIncome();
 		double propertyIncome = income.getPropertyIncome();
 
-		if (planName.equalsIgnoreCase("SNAP")) {
+		if (planName.equalsIgnoreCase(PLAN_SNAP)) {
 			if (empIncome <= 300) {
-				eligibilityOutput.setPlanStatus(APPROVED);
+				eligibilityOutput.setPlanStatus(PLAN_APPROVED);
 				eligibilityOutput.setBenifitAmt(200.0);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("SNAP rules are not statisfied.");
 			}
 		} // SNAP
-		else if (planName.equalsIgnoreCase("CCAP")) {
+		else if (planName.equalsIgnoreCase(PLAN_CCAP)) {
 			boolean isKidsAvailable = false;
 			boolean isKidsAgeApplicable = false;
 
@@ -132,56 +122,56 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 			}
 
 			if (empIncome <= 300 && isKidsAvailable && isKidsAgeApplicable) {
-				eligibilityOutput.setDenialReason(APPROVED);
+				eligibilityOutput.setDenialReason(PLAN_APPROVED);
 				eligibilityOutput.setBenifitAmt(300.0);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("CCAP rules are not statisfied.");
 			}
 		} // CCAP
-		else if (planName.equalsIgnoreCase("MEDAID")) {
+		else if (planName.equalsIgnoreCase(PLAN_MEDAID)) {
 			if (empIncome <= 300 && propertyIncome == 0) {
-				eligibilityOutput.setPlanStatus(APPROVED);
+				eligibilityOutput.setPlanStatus(PLAN_APPROVED);
 				eligibilityOutput.setBenifitAmt(200.0);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("MEDAID rules are not statisfied.");
 			}
 		} // MEDIAD
-		else if (planName.equalsIgnoreCase("MEDCARE")) {
+		else if (planName.equalsIgnoreCase(PLAN_MEDCARE)) {
 
 			if (citizenAge >= 65) {
-				eligibilityOutput.setPlanStatus(APPROVED);
+				eligibilityOutput.setPlanStatus(PLAN_APPROVED);
 				eligibilityOutput.setBenifitAmt(350.0);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("MEDCARE rules are not statisfied.");
 			} // else
 
 		} // MEDCARE
-		else if (planName.equalsIgnoreCase("CAJW")) {
+		else if (planName.equalsIgnoreCase(PLAN_CAJW)) {
 			DcEducationEntity educationEntity = educationRepo.findByCaseNo(caseNo);
 			int passOutYear = educationEntity.getPassOutYear().getYear();
 
 			if (empIncome == 0 && passOutYear < LocalDate.now().getYear()) {
-				eligibilityOutput.setPlanStatus(APPROVED);
+				eligibilityOutput.setPlanStatus(PLAN_APPROVED);
 				eligibilityOutput.setBenifitAmt(300.0);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("CAJW rules are not statisfied.");
 			} // else
 		} // CAJW
-		else if (planName.equalsIgnoreCase("QHP")) {
+		else if (planName.equalsIgnoreCase(PLAN_QHP)) {
 			if (citizenAge > 1) {
-				eligibilityOutput.setPlanStatus(APPROVED);
+				eligibilityOutput.setPlanStatus(PLAN_APPROVED);
 			} else {
-				eligibilityOutput.setPlanStatus(DENIED);
+				eligibilityOutput.setPlanStatus(PLAN_DENIED);
 				eligibilityOutput.setDenialReason("QHP rules are not statisfied");
 			}
 		}
 
 		// Checking plan status is 'Approved' or not
-		if (eligibilityOutput.getPlanStatus().equalsIgnoreCase("Approved")) {
+		if (eligibilityOutput.getPlanStatus().equalsIgnoreCase(PLAN_APPROVED)) {
 			eligibilityOutput.setPlanStartDate(LocalDate.now());
 			eligibilityOutput.setPlanEndDate(LocalDate.now().plusYears(2));
 		}
