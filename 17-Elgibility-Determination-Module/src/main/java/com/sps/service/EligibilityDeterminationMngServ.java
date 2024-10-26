@@ -76,7 +76,7 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 		LocalDate currentDate = LocalDate.now();
 		int citizenAge = Period.between(citizenEntity.getDob(), currentDate).getYears();
 
-		output = applyPlanCondition(caseNo, planName, citizenAge);
+		output = applyPlanCondition(caseNo, planName, citizenAge);// applying condition using method.
 		output.setCaseNo(caseNo);
 		output.setHolderName(citizenEntity.getFullName());
 		output.setHolderSSN(citizenEntity.getSsn());
