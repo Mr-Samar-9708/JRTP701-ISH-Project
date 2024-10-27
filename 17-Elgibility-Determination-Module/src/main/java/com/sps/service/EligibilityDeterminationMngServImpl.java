@@ -26,7 +26,7 @@ import com.sps.repository.IDcPlanRepository;
 import jakarta.annotation.Nonnull;
 
 @Service
-public class EligibilityDeterminationMngServ implements IEligibilityDeterminationMngService {
+public class EligibilityDeterminationMngServImpl implements IEligibilityDeterminationMngService {
 
 	private EligibilityDeterminationRepo eligibilityRepo;
 	private ICitizenAppRegistrationRepository citizenRepo;
@@ -47,7 +47,7 @@ public class EligibilityDeterminationMngServ implements IEligibilityDeterminatio
 	private static final String PLAN_DENIED = "Denied";
 
 	// Constructor Injection for initializing 
-	public EligibilityDeterminationMngServ(EligibilityDeterminationRepo eligibilityRepo,
+	public EligibilityDeterminationMngServImpl(EligibilityDeterminationRepo eligibilityRepo,
 			ICitizenAppRegistrationRepository citizenRepo, IDcCaseRepository caseRepo,
 			IDcChildrenRepository childrenRepo, IDcEducationRepository educationRepo, IDcIncomeRepository incomeRepo,
 			IDcPlanRepository planRepo) {
